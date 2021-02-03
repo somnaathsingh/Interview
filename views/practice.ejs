@@ -1,0 +1,98 @@
+<%- include('partials/header'); -%>
+<button onclick="document.getElementById('id02').style.display='block'" style="float: right;">Add a question</button>
+<div id="id02" class="modal">
+    <span onclick="document.getElementById('id02').style.display='none'"
+  class="close" title="Close Modal">&times;</span>
+  <form action="/practice" method="post" enctype="multipart/form-data">
+    <label for="compu">Select your topic</label>
+    <select name="compu" >
+        <option selected disabled hidden value="">Choose here</option>
+        <% reports.forEach((topic)=>{ %>
+            <option value = <%= topic._id %>><%= topic.topic %></option>
+        <% }); %>
+    </select>
+    <label for="topic">Write a new topic here</label>
+    <input type="text" name="topic" />
+    <button>Submit</button>
+</form>
+</div>
+<h2 class='recipe'>Topics</h2>
+<ul >
+
+  <% if(reports.length > 0){ %>
+<div>
+<% for(var i=0;i< reports.length;i++){ %>
+
+<a href="/practice/<%=reports[i].topic %>" >
+  <% if (reports[i].topic =="") { %>
+    <% } else { %>
+  <% if (i%3==0) { %>
+    <div class="list3">
+<h3>  <%= reports[i].topic %></h3>
+</div>
+<% } else if (i%3==1) { %>
+  <div class="list4">
+    <h4>  <%= reports[i].topic %></h4>
+    </div>
+<% } else { %>
+  <div class="list5">
+    <h5>  <%= reports[i].topic %></h5>
+    </div>
+    <% } %>
+ <% } %>
+</a>
+
+<%  } %>
+</div>
+<% 
+}else{ %>
+<P>No topics to display</P>
+<%  } %>  
+</ul>
+
+
+
+
+
+</body>
+</html>
+<script>
+  const form=document.querySelector('form');
+  form.addEventListener('submit',async(e)=>{
+      e.preventDefault();//prevents the forms from refreshing
+
+      
+      //getting values
+      const compu=form.compu.value;
+      const topic=form.topic.value;
+      try{
+          const res=await fetch('/practice',{
+              method:'POST',
+              body: JSON.stringify({compu:compu,topic:topic}),
+              headers: {'Content-Type':'application/json'}
+          });
+          
+          console.log("hi");
+          console.log("Hello");
+          console.log(res);
+          const status =await res.status;
+          console.log(status);
+          
+          
+          if(res.ok){
+              alert('Topic has been added')
+              location.assign('/addQuestion');
+          }
+          else{
+              alert('ERROR')
+              location.assign('/addQuestion');
+          }
+      }
+      catch(err){
+          console.log(err);
+      }
+
+
+
+  })
+</script>
