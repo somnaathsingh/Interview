@@ -4,24 +4,7 @@ const Interview = require('../models/interviewexp')
 const Company = require('../models/company')
 
 
-module.exports.questions=(req,res)=>{
-    const topic=req.params.topic;
-    var a=[];
-    Question.find()
-    .populate('topic')
-    .exec(function (err, topics) {
-        if (err) return handleError(err);
-        else{
-          topics.forEach(element => {
-            if(element.topic.topic===topic && element.display===true)
-            {
-              a.push(element);
-            }
-          });
-        }
-        res.render('questions',{title: topic, questions:a})
-    });
-}
+
 module.exports.addQuestion_get=(req,res)=>{
   Topic.find()
   .then(result=>{
