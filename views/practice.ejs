@@ -1,17 +1,10 @@
 <%- include('partials/header'); -%>
-<button onclick="document.getElementById('id02').style.display='block'" style="float: right;">Add a question</button>
+<button onclick="document.getElementById('id02').style.display='block'" style="float: right;">Add a new topic</button>
 <div id="id02" class="modal">
     <span onclick="document.getElementById('id02').style.display='none'"
   class="close" title="Close Modal">&times;</span>
   <form action="/practice" method="post" enctype="multipart/form-data">
-    <label for="compu">Select your topic</label>
-    <select name="compu" >
-        <option selected disabled hidden value="">Choose here</option>
-        <% reports.forEach((topic)=>{ %>
-            <option value = <%= topic._id %>><%= topic.topic %></option>
-        <% }); %>
-    </select>
-    <label for="topic">Write a new topic here</label>
+    <label for="topic">Add a new topic here</label>
     <input type="text" name="topic" />
     <button>Submit</button>
 </form>
@@ -63,12 +56,11 @@
 
       
       //getting values
-      const compu=form.compu.value;
       const topic=form.topic.value;
       try{
           const res=await fetch('/practice',{
               method:'POST',
-              body: JSON.stringify({compu:compu,topic:topic}),
+              body: JSON.stringify({topic:topic}),
               headers: {'Content-Type':'application/json'}
           });
           
@@ -80,7 +72,6 @@
           
           
           if(res.ok){
-              alert('Topic has been added')
               location.assign('/addQuestion');
           }
           else{

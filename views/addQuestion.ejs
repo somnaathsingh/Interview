@@ -5,7 +5,7 @@
     <label for="question">Question</label>
     <input type="text" name="question" required/>
     <label for="topic">Topic</label>
-    <select name="topic" required>
+    <select name="topic" >
         <option selected disabled hidden value="">Choose here</option>
         <% topics.forEach((topic)=>{ %>
             <option value=<%= topic._id %>><%= topic.topic %></option>

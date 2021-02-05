@@ -3,8 +3,24 @@ const Question = require('../models/question')
 const Interview = require('../models/interviewexp')
 const Company = require('../models/company')
 
-
-
+module.exports.questions=(req,res)=>{
+    const topic=req.params.topic;
+    var a=[];
+    Question.find()
+    .populate('topic')
+    .exec(function (err, topics) {
+        if (err) return handleError(err);
+        else{
+          topics.forEach(element => {
+            if(element.topic.topic===topic && element.display===true)
+            {
+              a.push(element);
+            }
+          });
+        }
+        res.render('questions',{title: topic, questions:a})
+    });
+}
 module.exports.addQuestion_get=(req,res)=>{
   Topic.find()
   .then(result=>{
@@ -14,48 +30,91 @@ module.exports.addQuestion_get=(req,res)=>{
         console.log(err);
   });
 }
-module.exports.addQuestion_post= async(req,res)=>{
-  const {question,topic,newTopic,link}=req.body;
-    try{
-      var ques;
-        if(topic!="1"){
-          ques= new Question({question:question,link:link,topic:topic,display:false});
-          const resp=await ques.save();
-        }
-        else{
-          const t=await Topic.create({topic:newTopic});
-          ques= new Question({question:question,link:link,topic:t._id,display:false});
-          const resp=await ques.save();
-        }
-      res.status(201).json({ques:ques._id});
-      
+module.exports.addTopic_post = (req,res,next) => {
+  
+     var obj5={
+       topic:req.body.topic,
+     }
+     Topic.create(obj5, (err, item) => {
+      if (err) {
+          console.log(err);
+      }
+      else {
+          // item.save();
+          res.redirect('/addQuestion');
+      }
+  });
+    
+} 
+module.exports.addQuestion_post= (req,res,next)=>{
+  var obj4={
+    question: req.body.question,
+    link: req.body.link,
+    topic: req.body.topic,
+    display:false,
+  }
+  Question.create(obj4, (err, item) => {
+    if (err) {
+        console.log(err);
     }
-    catch(err){
-      const errors=errorHandler(err);
-      
-      //console.log(err);
-      res.status(400).json({errors});
-    }}
+    else {
+        // item.save();
+        res.redirect('/practice');
+    }
+});
+  }
+
     module.exports.interviewExperience_get=(req,res)=>{
+      const company = req.params.company;
+      var a=[];
       Interview.find()
-      .then(result=>{
-          res.render('company',{items: result});
-      })
-      .catch(err=>{
-            console.log(err);
+      .populate('company')
+      .exec(function (err, companies) {
+          if (err) return handleError(err);
+          else{
+            companies.forEach(element => {
+              if(element.company.company=== company && element.display===true)
+              {
+                a.push(element);
+              }
+            });
+          }
+          res.render('interviewExp',{title:company, items:a,})
       });
     }
-    module.exports.addtopic_post = async(req,res) => {
-      const {topic,compu}=req.body;
-      try
-      {
-        var tops;
-        if(compu==""){
-          topic= new Topic({topic:topic});
-          const resp=await tops.save();
-        }
-        res.status(201).json({tops:tops._id});
-      }
-    catch(err){
-      console.log(err);
-    }}
+    module.exports.name_get = (req,res)=>{
+      const company = req.params.company;
+      const name= req.params.name;
+      var a=[];
+      Interview.find()
+      .exec(function (err, topics) {
+          if (err) return handleError(err);
+          else{
+            topics.forEach(element => {
+              if(element.name === name&& element.display===true)
+              {
+                a.push(element);
+              }
+            });
+          }
+          res.render('intername',{ title :company,questions:a})
+      });
+    }
+    module.exports.addCompany_get = (req,res)=>{
+      Company.find({},function (err,docs){
+        if (err) throw err;
+        else res.render('addCompany',{reports: docs});
+    });
+    }
+    module.exports.practice_get = (req,res)=>{
+      Topic.find({},function (err,docs){
+        if (err) throw err;
+        else res.render('practice',{reports: docs});
+    });
+    }
+    module.exports.addExperience_get = (req,res)=>{
+      Company.find({},function (err,docs){
+        if (err) throw err;
+        else res.render('addExperience',{reports: docs});
+    });
+    }

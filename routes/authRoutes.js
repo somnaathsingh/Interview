@@ -4,7 +4,6 @@ const practicecontroller = require('../controllers/practicecontroller')
 const Topic = require('../models/topic')
 const Interview = require('../models/interviewexp')
 const Question = require('../models/question');
-const queModel = Question.find({})
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose')
 const { requireAuth, checkUser } = require('../middleware/authMiddleware');
@@ -12,7 +11,6 @@ const Company = require('../models/company')
 const User = require('../models/User')
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose')
- 
 var fs = require('fs');
 var path = require('path');
 var multer = require('multer');
@@ -30,30 +28,14 @@ var upload = multer({ storage: storage });
 
 
 const router = Router();
+const AdminEmails= ['somnaath@google.com'];
 
 router.get('/signup', authController.signup_get);
 router.post('/signup', authController.signup_post);
 router.get('/login', authController.login_get);
 router.post('/login', authController.login_post);
 router.get('/logout', authController.logout_get);
-router.get('/practice/:topic', requireAuth ,function(req,res){
-    const topic = req.params.topic;
-    var a=[];
-    Question.find()
-    .populate('topic')
-    .exec(function (err, topics) {
-        if (err) return handleError(err);
-        else{
-          topics.forEach(element => {
-            if(element.topic.topic===topic && element.display===true)
-            {
-              a.push(element);
-            }
-          });
-        }
-        res.render('questions',{title:topic, questions:a,})
-    });
-})
+router.get('/practice/:topic', requireAuth ,practicecontroller.questions);
 router.get('/addQuestion',requireAuth,practicecontroller.addQuestion_get);
 router.post('/addQuestion',requireAuth,practicecontroller.addQuestion_post);
 router.get('/interviewExperience',requireAuth ,function(req,res){
@@ -62,43 +44,9 @@ router.get('/interviewExperience',requireAuth ,function(req,res){
     else res.render('company',{reports: docs});
 });
 });
-router.get('/interviewExperience/:company', requireAuth ,function(req,res){
-  const company = req.params.company;
-  var a=[];
-  Interview.find()
-  .populate('company')
-  .exec(function (err, companies) {
-      if (err) return handleError(err);
-      else{
-        companies.forEach(element => {
-          if(element.company.company=== company && element.display===true)
-          {
-            a.push(element);
-          }
-        });
-      }
-      res.render('interviewExp',{title:company, items:a,})
-  });
-})
-router.get('/interviewExperience/:company/:name', requireAuth ,function(req,res){
-  const company = req.params.company;
-  const name= req.params.name;
-  var a=[];
-  Interview.find()
-  .exec(function (err, topics) {
-      if (err) return handleError(err);
-      else{
-        topics.forEach(element => {
-          if(element.name === name&& element.display===true)
-          {
-            a.push(element);
-          }
-        });
-      }
-      res.render('intername',{ title :company,questions:a})
-  });
-})
-router.post('/practice',requireAuth , practicecontroller.addtopic_post)
+router.get('/interviewExperience/:company', requireAuth ,practicecontroller.interviewExperience_get);
+router.get('/interviewExperience/:company/:name', requireAuth ,practicecontroller.name_get);
+router.post('/practice',practicecontroller.addTopic_post);
 router.post('/addCompany',requireAuth , upload.single('imag'),(req, res, next) => {
   var name= req.body.company;
   if (name!='')
@@ -150,22 +98,7 @@ router.post('/addExperience',requireAuth , upload.single('image'),(req, res, nex
     }
 });
 });
-router.get('/practice',requireAuth ,function(req,res){
-  Topic.find({},function (err,docs){
-    if (err) throw err;
-    else res.render('practice',{reports: docs});
-});
-});
-router.get('/addCompany',requireAuth ,function(req,res){
-  Company.find({},function (err,docs){
-    if (err) throw err;
-    else res.render('addCompany',{reports: docs});
-});
-});
-router.get('/addExperience',requireAuth ,function(req,res){
-  Company.find({},function (err,docs){
-    if (err) throw err;
-    else res.render('addExperience',{reports: docs});
-});
-});
+router.get('/practice',requireAuth ,practicecontroller.practice_get);
+router.get('/addCompany',requireAuth ,practicecontroller.addCompany_get);
+router.get('/addExperience',requireAuth ,practicecontroller.addExperience_get);
 module.exports = router;

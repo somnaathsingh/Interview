@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config()
 const authRoutes = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
@@ -23,6 +24,7 @@ const ADMIN = {
   email:'somnaath@google.com',
   password:'Somnaathyes',
 }
+module.exports = ADMIN;
 
 // database connection
 const run = async() => {
